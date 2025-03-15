@@ -39,30 +39,30 @@ class ListSocio(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         print("Lista actualizada en la interfaz")
         sys.stdout.flush()
         ReproductorSonido.reproducir("refresh.wav")
-
     def cargar_socios(self):
+        """Carga los socios desde SQLite en la interfaz."""
         self.list_ctrl.DeleteAllItems()
         socios = gestion_socio.obtener_todos()
         for id_socio, datos in socios.items():
             index = self.list_ctrl.InsertItem(self.list_ctrl.GetItemCount(), str(id_socio))
             self.list_ctrl.SetItem(index, 1, datos["nombre"])
             self.list_ctrl.SetItem(index, 2, datos["domicilio"])
-            self.list_ctrl.SetItem(index, 3, datos["telefono"])
-            
+            self.list_ctrl.SetItem(index, 3, str(datos["telefono"]))
 
     def mostrar_detalle_socio(self, event):
+        """Muestra los detalles de un socio."""
         index = event.GetIndex()
         id_socio = self.list_ctrl.GetItemText(index)
 
-        socios = gestion_socio.obtener_todos()
-        if id_socio in socios:
-            datos = socios[id_socio]
+        datos = gestion_socio.buscar_socio(id_socio)
+        if datos:
             dialogo = DetalleSocioDialog(self, id_socio, datos)
             dialogo.ShowModal()
             dialogo.Destroy()
             self.cargar_socios()
 
     def abrir_dialogo_nuevo(self, event):
+        """Abre el diálogo para agregar un nuevo socio."""
         ReproductorSonido.reproducir("screenCurtainOn.wav")
         dialogo = AgregarSocioDialog(self)
         if dialogo.ShowModal() == wx.ID_OK:
@@ -70,9 +70,9 @@ class ListSocio(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         dialogo.Destroy()
 
     def cerrar_ventana(self, event):
+        """Cierra la ventana actual."""
         ReproductorSonido.reproducir("screenCurtainOff.wav")
-        self.Close()
-        
+        self.Close() 
 class DetalleSocioDialog(wx.Dialog):
     def __init__(self, parent, id_socio, datos):
         super().__init__(parent, title="Detalle del socio", size=(300, 250))
@@ -133,7 +133,7 @@ class EditarSocioDialog(wx.Dialog):
         vbox.Add(self.txt_domicilio, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         vbox.Add(wx.StaticText(panel, label="Telefono:"), flag=wx.LEFT | wx.TOP, border=10)
-        self.txt_telefono = wx.TextCtrl(panel, value=datos.get("telefono", ""))
+        self.txt_telefono = wx.TextCtrl(panel, value=str(datos.get("telefono", "")))
         vbox.Add(self.txt_telefono, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         vbox.Add(wx.StaticText(panel, label="Numero de socio:"), flag=wx.LEFT | wx.TOP, border=10)
@@ -180,8 +180,8 @@ class EliminarSocioDialog(wx.Dialog):
         panel = wx.Panel(self)
         vbox = wx.BoxSizer(wx.VERTICAL)
 
-        socios = self.gestion_socio.obtener_todos()
-        socio = socios.get(str(id_socio))
+        socio = self.gestion_socio.buscar_socio(id_socio)
+        
 
         if socio:
             mensaje = f"¿Estás seguro de que deseas eliminar el socio con ID '{socio['id']}'?"
@@ -282,7 +282,7 @@ class AgregarSocioDialog(wx.Dialog):
             gestion_socio.registrar_socio( nombre, domicilio, telefono, n_socio)
             print(f"Socio guardado: Nombre={nombre}, Domicilio={domicilio}, Telefono={telefono}, Numero de socio={n_socio}")
             self.mostrar_mensaje("Socio guardado con éxito.", wx.ICON_INFORMATION)
-
+# Llamar a la función de actualización en la ventana principal si está disponible
             self.txt_nombre.SetValue("")
             self.txt_domicilio.SetValue("")
             self.txt_telefono.SetValue("")

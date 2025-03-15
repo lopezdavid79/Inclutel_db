@@ -1,13 +1,13 @@
-import datetime
+from datetime import datetime
 
 class Reclamo:
-    contador_id = 0
+    
 
-    def __init__(self, fecha,tipo, detalle, socio, estado):
-        Reclamo.contador_id += 1
-        self.id = Reclamo.contador_id
-        self.fecha =fecha 
-        self.tipo = tipo
+    def __init__(self, id,fecha,servicio, detalle, socio, estado):
+        
+        self.id = id
+        self.fecha =        fecha 
+        self.servicio= servicio
         self.detalle = detalle
         self.socio = socio
         estados_validos = ["Pendiente", "En progreso", "Resuelto", "Cancelado"]
@@ -23,8 +23,8 @@ class Reclamo:
             fecha_datetime = datetime.datetime.fromisoformat(self.fecha)
             return {
                 "id": self.id,
-                "fecha": fecha_datetime.isoformat(),
-                "tipo": self.tipo,
+                "fecha": self.fecha,
+                "servicio": self.servicio,
                 "socio": self.socio,
                 "detalle": self.detalle,
                 "estado": self.estado
@@ -32,8 +32,8 @@ class Reclamo:
         else:
             return {
                 "id": self.id,
-                "fecha": self.fecha.isoformat(),
-                "tipo": self.tipo,
+                "fecha": self.fecha,
+                "servicio": self.servicio,
                 "socio": self.socio,   
                 "detalle": self.detalle,
                 "estado": self.estado

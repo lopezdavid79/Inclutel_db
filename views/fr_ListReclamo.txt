@@ -21,17 +21,16 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
 
         panel = wx.Panel(self)
         self.nombre_archivo_productos = 'data/productos.json'
-        # Botón desplegable
-        self.btn_menu = wx.Button(panel, label="&Menú", pos=(10, 260))
+        # Botón desplegable 
+        self.btn_menu = wx.Button(panel, label="&Menú", pos=(10, 260))  # Ajusta la posición según sea necesario
         self.btn_menu.Bind(wx.EVT_BUTTON, self.on_mostrar_menu)
         # Lista de reclamos
         self.list_ctrl = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SUNKEN, pos=(10, 10), size=(600, 250))
         self.list_ctrl.InsertColumn(0, 'ID', width=50)
         self.list_ctrl.InsertColumn(1, 'Fecha', width=100)
         self.list_ctrl.InsertColumn(2, 'Socio', width=150)
-        self.list_ctrl.InsertColumn(3, 'Servicio', width=150) #Agregamos la columna servicio.
-        self.list_ctrl.InsertColumn(4, 'Detalle', width=200)
-        self.list_ctrl.InsertColumn(5, 'Estado', width=100)
+        self.list_ctrl.InsertColumn(3, 'Detalle', width=200)
+        self.list_ctrl.InsertColumn(4, 'Estado', width=100)
         self.cargar_reclamos()
         self.list_ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.mostrar_detalle_reclamo)
 
@@ -54,18 +53,13 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
     def cargar_reclamos(self):
         self.list_ctrl.DeleteAllItems()
         reclamos = gestion_reclamo.obtener_todos()
+        for id_reclamo, datos in reclamos.items():
+            index = self.list_ctrl.InsertItem(self.list_ctrl.GetItemCount(), str(id_reclamo))
+            self.list_ctrl.SetItem(index, 1, datos["fecha"])
+            self.list_ctrl.SetItem(index, 2, datos["socio"])
+            self.list_ctrl.SetItem(index, 3, datos["detalle"])
+            self.list_ctrl.SetItem(index, 4, datos["estado"])
 
-        if reclamos:
-            for index, datos in enumerate(reclamos.values()):
-                nombre_socio = gestion_reclamo.obtener_nombre_socio(datos["socio"])
-                if nombre_socio is None:
-                    nombre_socio = "Socio no encontrado"
-                self.list_ctrl.InsertItem(index, str(datos["id"]))
-                self.list_ctrl.SetItem(index, 1, str(datos.get("fecha", "")))
-                self.list_ctrl.SetItem(index, 2, str(nombre_socio))
-                self.list_ctrl.SetItem(index, 3, datos["servicio"])
-                self.list_ctrl.SetItem(index, 4, datos["detalle"])
-                self.list_ctrl.SetItem(index, 5, datos["estado"])    
     def mostrar_detalle_reclamo(self, event):
         index = event.GetIndex()
         id_reclamo = self.list_ctrl.GetItemText(index)
@@ -251,6 +245,9 @@ class EliminarReclamoDialog(wx.Dialog):
             wx.MessageBox(str(e), "Error", wx.OK | wx.ICON_ERROR)
 
 
+
+
+
 class AgregarReclamoDialog(wx.Dialog):
     def __init__(self, parent, id=None, title="Nuevo Reclamo"):
         super().__init__(parent, id=wx.ID_ANY, title=title)
@@ -276,27 +273,23 @@ class AgregarReclamoDialog(wx.Dialog):
         grid.Add(wx.StaticText(panel, label="socio:"), pos=(2, 0), flag=wx.ALL, border=5)
         self.txt_socio = wx.TextCtrl(panel)
         grid.Add(self.txt_socio, pos=(2, 1), flag=wx.EXPAND | wx.ALL, border=5)
+
         # Lista desplegable para mostrar los socios encontrados
         self.list_socios = wx.ListBox(panel, style=wx.LB_SINGLE)
         grid.Add(self.list_socios, pos=(3, 1), flag=wx.EXPAND | wx.ALL, border=5)
         self.list_socios.Hide()  # Ocultar la lista al inicio
 
-        # Cargar socios
+        # Cargar el JSON de socios
         self.socios_dict = self.cargar_socios()
 
         # Bindear el evento de cambio de texto
         self.txt_socio.Bind(wx.EVT_TEXT, self.buscar_socio)
         self.list_socios.Bind(wx.EVT_LISTBOX, self.seleccionar_socio)
-        self.list_socios.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook) # Captura la tecla Enter
-        # Control para mostrar los datos del socio
-        grid.Add(wx.StaticText(panel, label="Datos del Socio:"), pos=(4, 0), flag=wx.ALL, border=5)
-        self.datos_socios_txt = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        grid.Add(self.datos_socios_txt, pos=(4, 1), flag=wx.EXPAND | wx.ALL, border=5)
 
-        # Estado (combo box) - MOVED TO BEFORE BUTTONS
-        grid.Add(wx.StaticText(panel, label="Estado:"), pos=(5, 0), flag=wx.ALL, border=5)
+        # Estado (combo box)
+        grid.Add(wx.StaticText(panel, label="Estado:"), pos=(3, 0), flag=wx.ALL, border=5)
         self.combo_estado = wx.ComboBox(panel, choices=["Pendiente", "Realizado", "En Proceso", "Cancelado", "Finalizado"], style=wx.CB_READONLY)
-        grid.Add(self.combo_estado, pos=(5, 1), flag=wx.EXPAND | wx.ALL, border=5)
+        grid.Add(self.combo_estado, pos=(4, 0), flag=wx.EXPAND | wx.ALL, border=5)
 
         # Botones
         btn_ok = wx.Button(panel, label="Guardar")
@@ -312,76 +305,43 @@ class AgregarReclamoDialog(wx.Dialog):
         self.Bind(wx.EVT_CHAR_HOOK, self.on_key_down)
         self.Centre()
 
-
-    #cargar los socios
     def cargar_socios(self):
         self.list_socios.Clear()
         socios = gestion_socio.obtener_todos()
         socios_dict = {}
 
         if socios:
-            for id_socio, socio in socios.items():  # Cambiado para iterar sobre items()
-                item_text = f"Código: {id_socio} - {socio['nombre']} - Domicilio: {socio['domicilio']} - Teléfono: {socio['telefono']}"  # Usar id_socio directamente
+            for socio in socios.values():
+                item_text = f"Código: {socio['id']} - {socio['nombre']} - Domicilio: {socio['domicilio']} - Teléfono: {socio['telefono']}"
                 self.list_socios.Append(item_text)
-                socios_dict[id_socio] = socio  # Usar id_socio como clave
+                socios_dict[socio['id']] = socio  # Usamos el ID como clave
 
         return socios_dict
-    #buscar los socios
+
     def buscar_socio(self, event):
-        socio_ingresado = self.txt_socio.GetValue().lower()
-        self.list_socios.Clear()
-        if socio_ingresado:
-            socios_encontrados = []
-            for id_socio, datos_socio in self.socios_dict.items():
-                # Obtener el nombre del socio y convertirlo a minúsculas
-                nombre_socio = datos_socio['nombre'].lower()
-                print(f"Buscando: {socio_ingresado}, Comparando con: {nombre_socio}") #Linea de depuración.
-                # Comparar el texto ingresado con el nombre del socio
-                if socio_ingresado in nombre_socio:
-                    socio_str = f"{datos_socio['nombre']}: {id_socio} - {datos_socio['domicilio']}, {datos_socio['telefono']}"
-                    socios_encontrados.append(socio_str)
+        texto_busqueda = self.txt_socio.GetValue().lower()
+        socios_encontrados = []
+
+        if hasattr(self, 'socios_dict'):
+            self.list_socios.Clear()
+            for socio in self.socios_dict.values():
+                if texto_busqueda in socio["nombre"].lower():
+                    item_text = f"{socio['nombre']} - Domicilio: {socio['domicilio']} - Teléfono: {socio['telefono']}"
+                    self.list_socios.Append(item_text)
+                    socios_encontrados.append(socio["nombre"])
+
             if socios_encontrados:
-                self.list_socios.Set(socios_encontrados)
                 self.list_socios.Show()
             else:
                 self.list_socios.Hide()
         else:
-            self.list_socios.Hide()
-    #seleccionar los socios 
+            print("Advertencia: self.socios_dict no está inicializado.")
 
     def seleccionar_socio(self, event):
-        """Selecciona un socio de la lista."""
         seleccion = self.list_socios.GetStringSelection()
+        self.txt_socio.SetValue(seleccion)
+        self.list_socios.Hide()
 
-        if seleccion and " - " in seleccion and ": " in seleccion:
-            try:
-                socio_id = seleccion.split(" - ")[0].split(": ")[1]
-                nombre_socio = seleccion.split(" - ")[1].split(": ")[1]
-                self.txt_socio.SetValue(nombre_socio)
-                self.list_socios.Hide()
-                self.mostrar_datos_socio(nombre_socio)
-                print(f"Socio ID seleccionado: {socio_id}")
-            except IndexError:
-                print("Error: Formato de selección incorrecto.")
-        else:
-            print("Error: Selección vacía o formato incorrecto.")
-
-    def mostrar_datos_socio(self, nombre_socio):
-        """Muestra los datos del socio (ejemplo)."""
-        print(f"Datos del socio: {nombre_socio}")
-
-    def on_char_hook(self, event):
-        """Captura la tecla Enter."""
-        if event.GetKeyCode() == wx.WXK_RETURN:
-            seleccion = self.list_socios.GetStringSelection()
-            if seleccion: # Verifica que haya una selección
-                self.seleccionar_socio(event)
-            else:
-                print("Error: No hay ningún socio seleccionado.")
-        else:
-            event.Skip()
-
-#teclas rapidas
     def on_key_down(self, event):
         key_code = event.GetKeyCode()
         control_presionado = event.ControlDown()
@@ -392,38 +352,15 @@ class AgregarReclamoDialog(wx.Dialog):
             self.Close()
         event.Skip()
 
-    #guardar un reclamo
     def guardar_reclamo(self, event):
         servicio = self.combo_servicio.GetValue().strip()
         detalle = self.txt_detalle.GetValue().strip()
         socio_nombre = self.txt_socio.GetValue().strip()
         estado = self.combo_estado.GetValue().strip()
 
-        socio_id = self.validar_reclamo(servicio, detalle, socio_nombre, estado)
-        if socio_id is False:  # Cambio: Verificar si socio_id es False
-            return
-
-        try:
-            gestion_reclamo.registrar_reclamo(None, servicio, detalle, socio_id, estado)
-            print(f"Reclamo guardado: servicio={servicio}, socio={socio_id}, Detalle={detalle}, Estado={estado}")
-            self.mostrar_mensaje("Reclamo guardado con éxito.", wx.ICON_INFORMATION)
-            # self.actualizar_lista_socios()  # Cambio: Comentado para evitar errores
-
-            # Enviar reclamo por WhatsApp
-            # self.enviar_reclamo_whatsapp(servicio, detalle, socio_nombre)  # Cambio: Comentado para evitar errores
-
-            # Limpiar los campos después de guardar
-            self.combo_servicio.SetSelection(0)
-            self.txt_detalle.SetValue("")
-            self.txt_socio.SetValue("")
-            self.combo_estado.SetSelection(0)
-        except Exception as e:
-            self.mostrar_mensaje(f"Error al guardar el reclamo: {e}", wx.ICON_ERROR)
-
-    def validar_reclamo(self, servicio, detalle, socio_nombre, estado):
         if not servicio or not detalle or not socio_nombre or not estado:
             self.mostrar_mensaje("Error: Todos los campos son obligatorios.", wx.ICON_ERROR)
-            return False  # Cambio: Devolver False en lugar de un valor no booleano
+            return
 
         # Buscar el ID del socio por su nombre
         socio_id = None
@@ -434,25 +371,26 @@ class AgregarReclamoDialog(wx.Dialog):
 
         if socio_id is None:
             self.mostrar_mensaje(f"Error: No se encontró el socio '{socio_nombre}'.", wx.ICON_ERROR)
-            return False  # Cambio: Devolver False en lugar de un valor no booleano
+            return
 
-        return socio_id
-    
-    
-    def mostrar_mensaje(self, mensaje, tipo=wx.ICON_ERROR):
-        wx.MessageBox(mensaje, "Información", style=tipo)
-
-
-    def mostrar_datos_socio(self, nombre_socio):
         try:
-            # Obtener los datos del socio desde la base de datos
-            socio = gestion_socio.obtener_socio_por_nombre(nombre_socio)
+            gestion_reclamo.registrar_reclamo(None, servicio, detalle, socio_id, estado)
+            print(f"Reclamo guardado: servicio={servicio}, socio={socio_id}, Detalle={detalle}, Estado={estado}")
+            self.mostrar_mensaje("Reclamo guardado con éxito.", wx.ICON_INFORMATION)
+            self.actualizar_lista_socios() #actualizamos la lista de socios
 
-            if socio:
-                # Formatear los datos del socio como una cadena
-                datos_str = "\n".join([f"{clave}: {valor}" for clave, valor in socio.items()])
-                self.datos_socios_txt.SetValue(datos_str)
-            else:
-                self.datos_socios_txt.SetValue("Socio no encontrado.")
+            # Enviar reclamo por WhatsApp
+            self.enviar_reclamo_whatsapp(servicio, detalle, socio_nombre)
+
+            # Limpiar los campos después de guardar
+            self.combo_servicio.SetSelection(0)
+            self.txt_detalle.SetValue("")
+            self.txt_socio.SetValue("")
+            self.combo_estado.SetSelection(0)
         except Exception as e:
-            self.datos_socios_txt.SetValue(f"Error al obtener datos del socio: {e}")
+            self.mostrar_mensaje(f"Error al guardar el reclamo: {e}", wx.ICON_ERROR)
+
+    def enviar_reclamo_whatsapp(self, servicio, detalle, socio):
+        """Envía el reclamo por WhatsApp a un número fijo."""
+
+        numero_telefono = "5493534294632"  # Reemplaza con
