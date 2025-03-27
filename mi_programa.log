@@ -1,0 +1,66 @@
+2025-03-19 21:25:17,778 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:25:17,778 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:25:17,788 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:25:17,788 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:25:17,818 - ERROR - Error al obtener todos los reclamos: no such table: reclamos
+2025-03-19 21:26:32,858 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:26:32,858 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:26:32,858 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:26:32,858 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:26:32,878 - ERROR - Error al obtener todos los reclamos: no such table: reclamos
+2025-03-19 21:26:39,288 - ERROR - Error al obtener socios: no such table: socios
+2025-03-19 21:27:12,028 - ERROR - Error al registrar socio: no such table: socios
+2025-03-19 21:27:20,538 - ERROR - Error al obtener todos los reclamos: no such table: reclamos
+2025-03-19 21:27:50,640 - ERROR - Error al obtener socios: no such table: socios
+2025-03-19 21:27:57,798 - ERROR - Error al obtener socios: no such table: socios
+2025-03-19 21:30:46,918 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:30:46,918 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:30:46,918 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:30:46,918 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:31:16,428 - INFO - Socio  registrado.
+2025-03-19 21:44:07,302 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:44:07,302 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:44:07,302 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 21:44:07,302 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 22:03:36,001 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 22:03:36,006 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 22:03:36,006 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 22:03:36,006 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 23:36:06,848 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 23:36:06,848 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 23:36:06,848 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-19 23:36:06,848 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:37:11,845 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:37:11,850 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:37:11,850 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:37:11,851 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:42:21,596 - INFO - Socio  registrado.
+2025-03-21 19:51:09,067 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:51:09,069 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:51:09,069 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:51:09,070 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:57:16,468 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:57:16,471 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:57:16,471 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-21 19:57:16,472 - INFO - Conexión a la base de datos establecida en: C:\Users\david\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:33:07,209 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:33:07,209 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:33:07,209 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:33:07,209 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:37:26,959 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:37:34,092 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:40:14,059 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:40:14,079 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:40:14,079 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:40:14,079 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:40:59,854 - INFO - Socio  registrado.
+2025-03-27 19:47:43,866 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:47:43,869 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:47:43,869 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:47:43,869 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:48:42,272 - INFO - Socio  registrado.
+2025-03-27 19:50:15,821 - INFO - Socio  registrado.
+2025-03-27 19:52:00,905 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:52:00,905 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:52:00,905 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db
+2025-03-27 19:52:00,905 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\inclutel.db

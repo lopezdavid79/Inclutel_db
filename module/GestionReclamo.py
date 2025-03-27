@@ -1,12 +1,17 @@
+import os
+import sys
 from datetime import date
 import sqlite3
 import logging
 from module.Reclamo import Reclamo  # Importa la clase Reclamo
+# Configuración del logging
+logging.basicConfig(filename='mi_programa.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class GestionReclamo:
     def __init__(self, db_nombre='inclutel.db'):
         self.db_nombre = db_nombre
-        self.conexion = sqlite3.connect(self.db_nombre)
+        db_path = os.path.join(getattr(sys, '_MEIPASS', os.path.abspath('.')), db_nombre)
+        self.conexion = sqlite3.connect(db_path)
         self.cursor = self.conexion.cursor()
 
     def registrar_reclamo(self, fecha, servicio, detalle, socio, estado):

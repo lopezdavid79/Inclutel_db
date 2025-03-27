@@ -1,19 +1,27 @@
 import sqlite3
 import logging
+import os
+import sys
+# Configuración del logging
+logging.basicConfig(filename='mi_programa.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class GestionSocio:
     def __init__(self, db_nombre="inclutel.db"):
         """Inicializa la clase y establece la conexión con la base de datos."""
         try:
-            self.conexion = sqlite3.connect(db_nombre)
+            # Obtener la ruta de la base de datos
+            db_path = os.path.join(getattr(sys, '_MEIPASS', os.path.abspath('.')), db_nombre)
+
+            self.conexion = sqlite3.connect(db_path)
             self.cursor = self.conexion.cursor()
             self.cursor.execute("PRAGMA foreign_keys = 1")
             self.conexion.commit()
-            logging.info("Conexión a la base de datos establecida.")
+            logging.info(f"Conexión a la base de datos establecida en: {db_path}") #agregado para depurar
         except sqlite3.Error as e:
             logging.error(f"Error al conectar a la base de datos: {e}")
             self.conexion = None
 
+    
     def cerrar_conexion(self):
         """Cierra la conexión con la base de datos."""
         if self.conexion:
@@ -79,7 +87,7 @@ class GestionSocio:
     def buscar_socio(self, id_socio):
         """Busca un socio por su ID y devuelve sus datos en un diccionario."""
         try:
-            self.cursor.execute("SELECT id, nombre, domicilio, telefono, n_socio FROM socios WHERE id = ?", (id_socio,))
+            self.cursor.execute("SELECT id, nombre, domicilio, telefono,n_socio  FROM socios WHERE id = ?", (id_socio,))
             resultado = self.cursor.fetchone()
 
             if resultado:
@@ -98,26 +106,53 @@ class GestionSocio:
             logging.error(f"Error al buscar el socio: {e}")
             return None  # Devuelve None en caso de error
 
-
     def obtener_socio_por_nombre(self, nombre_socio):
         """Recupera un socio por nombre de la base de datos."""
-        try:
-            self.cursor.execute("SELECT id, nombre, domicilio, telefono, n_socio FROM socios WHERE nombre = ?", (nombre_socio,))
+        try:                         
+            self.cursor.execute("SELECT id, nombre, domicilio, telefono, n_socio FROM socios WHERE LOWER(nombre) = LOWER(?)", (nombre_socio,))
             socio = self.cursor.fetchone()
 
             if socio:
-                # Convertir el resultado a un diccionario
-                socio_dict = {
-                    "id": socio[0],
-                    "nombre": socio[1],
-                    "domicilio": socio[2],
-                    "telefono": socio[3],
-                    "n_socio": socio[4]
-                }
-                return socio_dict
+                    # Convertir el resultado a un diccionario
+                    socio_dict = {
+                        "id": socio[0],
+                        "nombre": socio[1],
+                        "domicilio": socio[2],
+                        "telefono": socio[3],
+                        "n_socio": socio[4]
+                    }
+                    return socio_dict
             else:
-                return None  # Retorna None si no se encuentra el socio
+                    return None  # Retorna None si no se encuentra el socio
 
         except sqlite3.Error as e:
             logging.error(f"Error al obtener socio por nombre: {e}")
             return None
+
+    def obtener_nombres_socios(self):
+        """Obtiene todos los nombres de socios de la base de datos."""
+        try:           
+                
+                self.cursor.execute("SELECT nombre FROM socios")
+                nombres = [row[0] for row in self.cursor.fetchall()]
+                return nombres
+        except sqlite3.Error as e:
+            print(f"Error al obtener nombres de socios: {e}")
+            return []  # Retorna una lista vacía en caso de error
+        
+    def buscar_socio_por_nombre_parcial(self, nombre_socio):
+        """Busca socios por nombre parcial en la base de datos."""
+        try:
+            self.cursor.execute("SELECT id, nombre, domicilio FROM socios WHERE LOWER(nombre) LIKE ?", ('%' + nombre_socio + '%',))
+            resultados = self.cursor.fetchall()
+            socios_encontrados = [{"id": resultado[0], "nombre": resultado[1], "domicilio": resultado[2]} for resultado in resultados]
+
+            # Imprime los socios encontrados
+            print("Socios encontrados:")
+            for socio in socios_encontrados:
+                print(f"  ID: {socio['id']}, Nombre: {socio['nombre']}, Domicilio: {socio['domicilio']}")
+
+            return socios_encontrados
+        except sqlite3.Error as e:
+            logging.error(f"Error al buscar socios por nombre parcial: {e}")
+            return []
