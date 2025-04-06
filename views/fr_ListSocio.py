@@ -157,7 +157,7 @@ class EditarSocioDialog(wx.Dialog):
         telefono = self.txt_telefono.GetValue().strip()
         n_socio = self.txt_n_socio.GetValue().strip()
 
-        if not nombre or not domicilio or not telefono or not n_socio:
+        if not nombre or not domicilio or not telefono :
             wx.MessageBox("Todos los campos son obligatorios", "Error", wx.OK | wx.ICON_ERROR)
             return
 

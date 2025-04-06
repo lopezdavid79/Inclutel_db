@@ -3,11 +3,12 @@ import os
 import sys
 import Tablas
 from module.ReproductorSonido import ReproductorSonido 
-from views.fr_ListReclamo import   ListReclamo
+
+from views.fr_Operador import TurnoFrame  
 class MyApp(wx.App):
     def OnInit(self):
         Tablas.crear_tablas()
-        self.frame = ListReclamo(None, title="Inclutel")
+        self.frame = TurnoFrame(None, title="Inclutel")
         self.frame.Show()
         self.SetTopWindow(self.frame)
         return True

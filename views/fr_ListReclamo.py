@@ -17,20 +17,27 @@ from module.GestionSocio import GestionSocio
 gestion_reclamo = GestionReclamo()
 gestion_socio = GestionSocio()
 class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
-    def __init__(self, parent, id=None, title="Gestión de Reclamos", *args, **kwds):
-        super().__init__(parent, id=wx.ID_ANY, title=title, *args, **kwds)
+    def __init__(self, parent, nombre, fecha, hora_fin, id=wx.ID_ANY, *args, **kwds):
+        super().__init__(parent, id=id, title="Gestión de Reclamos", *args, **kwds)
+
+        self.nombre = nombre
+        self.fecha = fecha
+        self.hora_fin = hora_fin
 
         panel = wx.Panel(self)
         self.nombre_archivo_productos = 'data/productos.json'
+        ReproductorSonido.reproducir("inicio.wav")
+
         # Botón desplegable
         self.btn_menu = wx.Button(panel, label="&Menú", pos=(10, 260))
         self.btn_menu.Bind(wx.EVT_BUTTON, self.on_mostrar_menu)
+
         # Lista de reclamos
         self.list_ctrl = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SUNKEN, pos=(10, 10), size=(600, 250))
         self.list_ctrl.InsertColumn(0, 'ID', width=50)
         self.list_ctrl.InsertColumn(1, 'Fecha', width=100)
         self.list_ctrl.InsertColumn(2, 'Socio', width=150)
-        self.list_ctrl.InsertColumn(3, 'Servicio', width=150) #Agregamos la columna servicio.
+        self.list_ctrl.InsertColumn(3, 'Servicio', width=150)
         self.list_ctrl.InsertColumn(4, 'Detalle', width=200)
         self.list_ctrl.InsertColumn(5, 'Estado', width=100)
         self.cargar_reclamos()
@@ -39,16 +46,26 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         # Botones
         btn_nuevo = wx.Button(panel, label="Nuevo Reclamo", pos=(50, 300))
         btn_nuevo.Bind(wx.EVT_BUTTON, self.abrir_dialogo_nuevo)
+
         btn_cerrar = wx.Button(panel, label="Cerrar", pos=(300, 300))
         btn_cerrar.Bind(wx.EVT_BUTTON, self.cerrar_ventana)
+
         btn_actualizar = wx.Button(panel, label="Actualizar", pos=(175, 300))
         btn_actualizar.Bind(wx.EVT_BUTTON, self.actualizar_lista)
-        # Vinculación de la tecla F2
+
+        # Tecla F2 para agregar socios
         self.Bind(wx.EVT_MENU, self.on_add_socios, id=wx.ID_NEW)
         accel_tbl = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_F2, wx.ID_NEW)])
         self.SetAcceleratorTable(accel_tbl)
 
+        # Temporizador para actualizar el título
+        self.temporizador = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.actualizar_titulo, self.temporizador)
+        self.temporizador.Start(1000)
+
+        self.actualizar_titulo(None)
         self.Show()
+
 
     def actualizar_lista(self, event):
         self.cargar_reclamos()
@@ -104,6 +121,7 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         self.Close()
 
     def on_mostrar_menu(self, event):
+        ReproductorSonido.reproducir("screenCurtainOn.wav")
         menu = wx.Menu()
         ver_socio_item = menu.Append(wx.ID_ANY, "Ver Socios")
         self.Bind(wx.EVT_MENU, self.on_ver_socios, ver_socio_item)
@@ -116,14 +134,45 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
 
     def on_ver_socios(self, event):
         frame_socios = ListSocio(self) # Crea una instancia de fr_listSocio
+        ReproductorSonido.reproducir("screenCurtainOn.wav")
         frame_socios.Show()
         
     def on_add_socios(self, event):
         add_socios = AgregarSocioDialog(self) # Crea una instancia de fr_listSocio
+        ReproductorSonido.reproducir("screenCurtainOn.wav")
         if add_socios.ShowModal() == wx.ID_OK:
             self.actualizar_lista_socios()
         add_socios.Destroy()
         
+
+
+
+
+
+    def actualizar_titulo(self, event):
+        from datetime import datetime
+
+        ahora = datetime.now()
+        hora_actual = ahora.strftime("%H:%M:%S")
+
+        try:
+            hora_fin_dt = datetime.strptime(self.hora_fin, "%H:%M")
+            hora_fin_dt = hora_fin_dt.replace(year=ahora.year, month=ahora.month, day=ahora.day)
+            restante = hora_fin_dt - ahora
+
+            if restante.total_seconds() < 0:
+                texto = "Turno finalizado"
+                ReproductorSonido.reproducir("alarma.wav")
+                self.temporizador.Stop()  # 🔴 Detener el timer para que no siga actualizando
+                wx.CallLater(5000, ReproductorSonido.detener)  # Detiene la alarma tras 3 segundos
+            else:
+                horas, resto = divmod(int(restante.total_seconds()), 3600)
+                minutos, segundos = divmod(resto, 60)
+                texto = f"Tiempo restante: {horas:02}:{minutos:02}:{segundos:02}"
+        except Exception as e:
+            texto = "Error al calcular tiempo"
+
+        self.SetTitle(f"Gestión de Reclamos - {texto}")
 
 
 class DetalleReclamoDialog(wx.Dialog):

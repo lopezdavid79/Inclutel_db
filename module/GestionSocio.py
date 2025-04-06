@@ -156,3 +156,30 @@ class GestionSocio:
         except sqlite3.Error as e:
             logging.error(f"Error al buscar socios por nombre parcial: {e}")
             return []
+
+
+
+    def obtener_socios_filtrados(self, filtro):
+        try:
+            filtro = f"%{filtro.lower()}%"  # Búsqueda parcial sin importar mayúsculas
+            self.cursor.execute("""
+                SELECT id, nombre, domicilio, telefono
+                FROM socios
+                WHERE LOWER(nombre) LIKE ?
+            """, (filtro,))
+            
+            resultados = self.cursor.fetchall()
+            
+            socios_filtrados = {
+                str(row[0]): {
+                    "nombre": row[1],
+                    "domicilio": row[2],
+                    "telefono": row[3]
+                } for row in resultados
+            }
+
+            return socios_filtrados
+
+        except sqlite3.Error as e:
+            logging.error(f"Error al filtrar socios: {e}")
+            return {}

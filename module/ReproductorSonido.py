@@ -20,3 +20,9 @@ class ReproductorSonido:
                 print(f"Error: No se pudo cargar el archivo de sonido '{ruta_sonido}'.")
         except Exception as e:
             print(f"Error al reproducir sonido: {e}")
+
+    @staticmethod
+    def detener():
+        """Detiene la reproducción del sonido actual, si existe."""
+        if ReproductorSonido.sonido:
+            ReproductorSonido.sonido.Stop()

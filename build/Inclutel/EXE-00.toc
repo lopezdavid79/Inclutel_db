@@ -44,7 +44,7 @@
  [],
  False,
  False,
- 1743117339,
+ 1743194295,
  [('runw.exe',
    'C:\\Users\\DAVID\\repo\\Inclutel_db-1.0.0\\entorno\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\runw.exe',
    'EXECUTABLE')])

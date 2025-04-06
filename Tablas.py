@@ -31,7 +31,7 @@ def crear_tablas():
         """)
 
         conexion.commit()  
-        print("Tablas 'socios' y 'reclamos' creadas correctamente.")
+        #print("Tablas 'socios' y 'reclamos' creadas correctamente.")
 
     except sqlite3.Error as e:
         print(f"Error al crear las tablas: {e}")
@@ -39,6 +39,3 @@ def crear_tablas():
     finally:
         if conexion:
             conexion.close()
-
-if __name__ == "__main__":
-    crear_tablas()

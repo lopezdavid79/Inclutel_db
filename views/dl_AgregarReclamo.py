@@ -30,21 +30,40 @@ class AgregarReclamoDialog(wx.Dialog):
         grid.Add(self.txt_detalle, pos=(1, 1), flag=wx.EXPAND | wx.ALL, border=5)
 
         # socio
-        grid.Add(wx.StaticText(panel, label="socio:"), pos=(2, 0), flag=wx.ALL, border=5)
+        # Etiqueta de socio
+        grid.Add(wx.StaticText(panel, label="Socio:"), pos=(2, 0), flag=wx.ALL | wx.ALIGN_CENTER_VERTICAL, border=5)
+
+    # Campo de búsqueda
         self.txt_socio = wx.TextCtrl(panel)
         grid.Add(self.txt_socio, pos=(2, 1), flag=wx.EXPAND | wx.ALL, border=5)
-        # Lista desplegable para mostrar los socios encontrados
-        self.list_socios = wx.ListBox(panel, style=wx.LB_SINGLE)
-        grid.Add(self.list_socios, pos=(3, 1), flag=wx.EXPAND | wx.ALL, border=5)
-        self.list_socios.Hide()  # Ocultar la lista al inicio
 
-        # Cargar socios
+        # Botón Filtrar
+        self.btn_filtrar_socio = wx.Button(panel, label="Filtrar")
+        grid.Add(self.btn_filtrar_socio, pos=(2, 2), flag=wx.ALL, border=5)
+
+    # Lista de resultados
+        self.list_socios = wx.ListBox(panel, style=wx.LB_SINGLE)
+        grid.Add(self.list_socios, pos=(3, 1), span=(1, 2), flag=wx.EXPAND | wx.ALL, border=5)
+        self.list_socios.Hide()  # Oculta al inicio
+
+    # Botón Seleccionar Socio
+        self.btn_seleccionar_socio = wx.Button(panel, label="Seleccionar &Socio")
+        grid.Add(self.btn_seleccionar_socio, pos=(4, 2), flag=wx.ALIGN_RIGHT | wx.ALL, border=5)
+
+        # Diccionario de socios
         self.socios_dict = self.cargar_socios()
 
-        # Bindear el evento de cambio de texto
-        self.txt_socio.Bind(wx.EVT_TEXT, self.buscar_socio)
-        self.list_socios.Bind(wx.EVT_LISTBOX, self.seleccionar_socio)
-        self.list_socios.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook) # Captura la tecla Enter
+    # Eventos
+        self.btn_filtrar_socio.Bind(wx.EVT_BUTTON, self.filtrar_socios)
+        self.btn_seleccionar_socio.Bind(wx.EVT_BUTTON, self.seleccionar_socio)
+        self.txt_socio.Bind(wx.EVT_KEY_DOWN, self.on_key_socio)
+        self.list_socios.Bind(wx.EVT_KEY_DOWN, self.on_key_lista_socio)
+
+        #self.list_socios.Bind(wx.EVT_LISTBOX, self.seleccionar_socio)
+        #self.list_socios.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
+
+        grid.AddGrowableCol(1)
+
         # Control para mostrar los datos del socio
         grid.Add(wx.StaticText(panel, label="Datos del Socio:"), pos=(4, 0), flag=wx.ALL, border=5)
         self.datos_socios_txt = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -66,82 +85,77 @@ class AgregarReclamoDialog(wx.Dialog):
         vbox.Add(grid, proportion=1, flag=wx.ALL | wx.EXPAND, border=10)
         vbox.Add(hbox, flag=wx.ALIGN_CENTER | wx.ALL, border=10)
         panel.SetSizer(vbox)
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_down)
+        #self.Bind(wx.EVT_CHAR_HOOK, self.on_key_down)
         self.Centre()
 
 
     #cargar los socios
     def cargar_socios(self):
+        
+        try:
+            self.socios_dict = gestion_socio.obtener_todos()
+            self.list_socios.Clear()
+            for id_socio, datos in self.socios_dict.items():
+                self.list_socios.Append(f"{datos['nombre']} ({datos['domicilio']} - {datos['telefono']})")
+        except Exception as e:
+            print(f"Error al cargar socios: {e}")
+
+
+    def filtrar_socios(self, event):
+        filtro = self.txt_socio.GetValue()
+        print(f"Filtrando socios con: '{filtro}'")
         self.list_socios.Clear()
-        socios = gestion_socio.obtener_todos()
-        socios_dict = {}
+        try:
+            socios_filtrados = gestion_socio.obtener_socios_filtrados(filtro)
+            self.socios_dict = socios_filtrados  # ✅ IMPORTANTE: actualizar el dict interno
+            for id_socio, datos in socios_filtrados.items():
+                self.list_socios.Append(f"{datos['nombre']} ({datos['domicilio']} - {datos['telefono']})")
+            if self.list_socios.GetCount() > 0:
+                self.list_socios.SetFocus()
+        except Exception as e:
+            print(f"Error al filtrar socios: {e}")
 
-        if socios:
-            for id_socio, socio in socios.items():  # Cambiado para iterar sobre items()
-                item_text = f"Código: {id_socio} - {socio['nombre']} - Domicilio: {socio['domicilio']} - Teléfono: {socio['telefono']}"  # Usar id_socio directamente
-                self.list_socios.Append(item_text)
-                socios_dict[id_socio] = socio  # Usar id_socio como clave
 
-        return socios_dict
-    #buscar los socios
-    def buscar_socio(self, event):
-        """Busca socios en la base de datos por nombre."""
-        socio_ingresado = self.txt_socio.GetValue().lower()
-        self.list_socios.Clear()
+    def seleccionar_socio(self, event=None):
+        seleccion = self.list_socios.GetStringSelection()
+        if seleccion:
+            nombre_socio = seleccion.split(' (')[0]
+            self.txt_socio.SetValue(seleccion.split(' (')[0])
+            self.txt_socio.SetFocus()
+            print("Intentando setear el foco en txt_socio")
+            self.anunciar_seleccion_socio()
+            self.mostrar_datos_socio(nombre_socio)  # Mostramos info
 
-        if socio_ingresado:
-            socios_encontrados =         gestion_socio.buscar_socio_por_nombre_parcial(socio_ingresado)
-            print("socios encontrados:")
-            print(socios_encontrados)
+    def on_key_socio(self, event):
+        keycode = event.GetKeyCode()
+        print(f"Tecla presionada en txt_socio: {keycode}")
 
-            if socios_encontrados:
-                items = []
-                for socio in socios_encontrados:
-                    self.list_socios.Append(socio['nombre'], clientData=(socio['nombre'], socio['id']))
-                self.list_socios.Show()
-            else:
-                self.list_socios.Hide()
-        else:
-            self.list_socios.Hide()        #seleccionar los socios 
-    def seleccionar_socio(self, event):
-        """Selecciona un socio de la lista."""
-        seleccion_index = self.list_socios.GetSelection()
-
-        if seleccion_index != wx.NOT_FOUND: # Verifica si se ha seleccionado un elemento
-            nombre_socio, socio_id = self.list_socios.GetClientData(seleccion_index)
-            self.txt_socio.SetValue(nombre_socio)
-            self.list_socios.Hide()
-            self.mostrar_datos_socio(nombre_socio)
-            print(f"Socio ID seleccionado: {socio_id}")
-        else:
-            print("Error: No se ha seleccionado ningún socio.")
-
-    def mostrar_datos_socio(self, nombre_socio):
-        """Muestra los datos del socio (ejemplo)."""
-        print(f"Datos del socio: {nombre_socio}")
-
-    def on_char_hook(self, event):
-        """Captura la tecla Enter."""
-        if event.GetKeyCode() == wx.WXK_RETURN:
-            seleccion = self.list_socios.GetStringSelection()
-            if seleccion: # Verifica que haya una selección
-                self.seleccionar_socio(event)
-            else:
-                print("Error: No hay ningún socio seleccionado.")
+        if keycode == wx.WXK_RETURN:
+            print("Enter presionado en txt_socio")
+            self.seleccionar_socio()
+            self.txt_socio.SetFocus()
+        elif keycode in [wx.WXK_UP, wx.WXK_DOWN]:
+            event.Skip()
         else:
             event.Skip()
 
-#teclas rapidas
-    def on_key_down(self, event):
-        key_code = event.GetKeyCode()
-        control_presionado = event.ControlDown()
+    def on_key_lista_socio(self, event):
+        keycode = event.GetKeyCode()
+        print(f"Tecla presionada en lista socios: {keycode}")
+        if keycode == wx.WXK_RETURN or keycode == 307:
+            print("Enter presionado en lista socios")
+            self.seleccionar_socio()
+            self.txt_socio.SetFocus()
+        else:
+            event.Skip()
 
-        if control_presionado and key_code == ord("G"):
-            self.guardar_reclamo(None)
-        elif control_presionado and key_code == ord("C"):
-            self.Close()
-        event.Skip()
+    def anunciar_seleccion_socio(self):
+        """Fuerza la lectura de la selección de socio en lectores de pantalla."""
+        seleccion = self.list_socios.GetStringSelection()
+        if seleccion:
+            wx.CallAfter(self.list_socios.SetLabel, seleccion)
 
+    
     #guardar un reclamo
     def guardar_reclamo(self, event):
         servicio = self.combo_servicio.GetValue().strip()
