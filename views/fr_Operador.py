@@ -36,7 +36,7 @@ class TurnoFrame(wx.Frame):
         # Botones
         hbox_botones = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.btn_guardar = wx.Button(panel, label="Iniciar  Turno")
+        self.btn_guardar = wx.Button(panel, label="&Iniciar  Turno")
         self.btn_guardar.Bind(wx.EVT_BUTTON, self.guardar_turno)
         hbox_botones.Add(self.btn_guardar, flag=wx.RIGHT, border=10)
 

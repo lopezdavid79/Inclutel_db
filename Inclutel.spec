@@ -8,7 +8,7 @@ a = Analysis(
     ['Inclutel.py'],
     pathex=[],
     binaries=[],
-    datas=[('Sounds', 'Sounds')],
+    datas=[('Sounds', 'Sounds'), ('Inclutel.db', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
