@@ -11,11 +11,16 @@ class TurnoFrame(wx.Frame):
         super().__init__(parent, id=wx.ID_ANY, title=title, *args, **kwds)
         panel = wx.Panel(self)
         vbox = wx.BoxSizer(wx.VERTICAL)
+        # Combobox para seleccionar el operador
+        vbox.Add(wx.StaticText(panel, label="Seleccionar Operador:"), flag=wx.LEFT | wx.TOP, border=10)
+        self.combo_operador = wx.ComboBox(panel, choices=self.obtener_nombres_operadores(), style=wx.CB_READONLY)
+        vbox.Add(self.combo_operador, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
+        # Establecer un valor por defecto (opcional)
+        if self.combo_operador.GetCount() > 0:
+            self.combo_operador.SetSelection(3)
 
-        vbox.Add(wx.StaticText(panel, label="Nombre del Operador:"), flag=wx.LEFT | wx.TOP, border=10)
-        self.txt_nombre = wx.TextCtrl(panel, value="Mara")
-        vbox.Add(self.txt_nombre, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
-
+    
+#fecha
         vbox.Add(wx.StaticText(panel, label="Fecha :"), flag=wx.LEFT | wx.TOP, border=10)
         self.txt_fecha = wx.TextCtrl(panel, value=datetime.now().strftime("%Y-%m-%d"))
         vbox.Add(self.txt_fecha, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
@@ -49,12 +54,12 @@ class TurnoFrame(wx.Frame):
         self.Close()
 
     def guardar_turno(self, event):
-        nombre = self.txt_nombre.GetValue().strip()
+        nombre = self.combo_operador.GetStringSelection().strip()  # Obtener el nombre del combobox 
         fecha = self.txt_fecha.GetValue().strip()
         comienzo = self.txt_hora_comienzo.GetValue().strip()
         fin = self.txt_hora_fin.GetValue().strip()
-
-        if not nombre or not fecha or not comienzo or not fin:
+        operador_id = gestion_OperadorTurno.obtener_operador_id(nombre)
+        if not fecha or not comienzo or not fin:
             wx.MessageBox("Por favor, completá todos los campos.", "Faltan datos", wx.OK | wx.ICON_WARNING)
             return
 
@@ -72,29 +77,31 @@ class TurnoFrame(wx.Frame):
             wx.MessageBox("La hora de fin debe ser posterior a la de comienzo.", "Hora inválida", wx.OK | wx.ICON_WARNING)
             return
 
-        existe, dentro_horario = gestion_OperadorTurno.existe_y_esta_dentro_del_horario(nombre, fecha, comienzo, fin)
+        existe, dentro_horario = gestion_OperadorTurno.existe_y_esta_dentro_del_horario(fecha, comienzo, fin,operador_id)
 
         if existe and dentro_horario:
-            self.abrir_list_reclamo(nombre, fecha, fin)
+            self.abrir_list_reclamo(fecha, fin,operador_id)
             return
         elif existe and not dentro_horario:
             wx.MessageBox("⚠️ Ya existe un turno en esa fecha, pero el horario no coincide. No se puede registrar.", "Conflicto de horario", wx.OK | wx.ICON_WARNING)
             return
 
-        operador = OperadorTurno(nombre, fecha, comienzo, fin)
+        
+        print(operador_id)
+        operador = OperadorTurno(fecha, comienzo, fin, operador_id)
         exito = gestion_OperadorTurno.registrar_operador(operador)
 
         if exito:
             self.txt_resultado.SetLabel(f"✅ Turno guardado: {nombre} {fecha} ({comienzo} - {fin})")
-            self.abrir_list_reclamo(nombre, fecha, fin)
+            self.abrir_list_reclamo(fecha, fin,operador_id)
         else:
             self.txt_resultado.SetLabel("❌ Error al guardar el turno. Ver logs.")
 
         turno = gestion_OperadorTurno.obtener_todos()
-        print(turno)
+#        print(turno)
 
-    def abrir_list_reclamo(self, nombre, fecha, hora_fin):
-        self.list_reclamo = ListReclamo(None, nombre=nombre, fecha=fecha, hora_fin=hora_fin)
+    def abrir_list_reclamo(self, fecha, hora_fin, operador_id):
+        self.list_reclamo = ListReclamo(None,  fecha=fecha, hora_fin=hora_fin, operador_id=operador_id)
         self.list_reclamo.Show()
         self.Close()
 
@@ -110,3 +117,7 @@ class TurnoFrame(wx.Frame):
             return True
         except ValueError:
             return False
+
+    def obtener_nombres_operadores(self):
+        """Obtiene los nombres de los operadores usando la clase de gestión."""
+        return gestion_OperadorTurno.obtener_nombres_operadores()

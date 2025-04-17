@@ -4,6 +4,8 @@ from datetime import date
 import sqlite3
 import logging
 from module.Reclamo import Reclamo  # Importa la clase Reclamo
+from module.OperadorTurno import GestionOperadorTurno 
+gestion_OperadorTurno = GestionOperadorTurno()
 # Configuración del logging
 logging.basicConfig(filename='mi_programa.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -15,18 +17,20 @@ class GestionReclamo:
         self.cursor = self.conexion.cursor()
 
     def registrar_reclamo(self, fecha, servicio, detalle, socio, estado):
-        """Registra un nuevo reclamo en la base de datos."""
+        """Registra un nuevo reclamo en la base de datos."""            
+        operador_activo_id = gestion_OperadorTurno.obtener_operador_activo()
+        operador_id  = operador_activo_id
         try:
             fecha_actual = date.today()  # Obtiene la fecha actual
             print(f"Fecha a insertar: {fecha_actual}")  # Línea de depuración
             self.cursor.execute("""
-                INSERT INTO reclamos (fecha, servicio, detalle, socio, estado)
-                VALUES (?, ?, ?, ?, ?)
-            """, (fecha_actual, servicio, detalle, socio, estado))
+                INSERT INTO reclamos (fecha, servicio, detalle, socio, estado,operador_id)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (fecha_actual, servicio, detalle, socio, estado, operador_id))
             self.conexion.commit()
             reclamo_id = self.cursor.lastrowid  # Obtiene el ID generado
             print(f"Reclamo registrado con ID: {reclamo_id}")
-            return Reclamo(reclamo_id, fecha, servicio, detalle, socio, estado)
+            return Reclamo(reclamo_id, fecha, servicio, detalle, socio, estado, operador_id)
         except sqlite3.Error as e:
             print(f"Error al registrar reclamo: {e}")
             return None
@@ -112,3 +116,5 @@ class GestionReclamo:
         except sqlite3.Error as e:
             logging.error(f"Error al obtener nombre del socio: {e}")
             return None
+        
+        

@@ -13,25 +13,48 @@ class ListSocio(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         super().__init__(parent, id=wx.ID_ANY, title=title, *args, **kwds)
 
         panel = wx.Panel(self)
+        # Sizer para organizar los elementos del panel
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        # Panel para el campo de búsqueda
+        search_panel = wx.Panel(panel)
+        search_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.search_ctrl = wx.TextCtrl(search_panel, size=(200, -1), style=wx.TE_PROCESS_ENTER)
+        self.search_ctrl.Bind(wx.EVT_TEXT_ENTER, self.buscar_socio)  # Vincular Enter
+        btn_buscar = wx.Button(search_panel, label="Buscar")
+        btn_buscar.Bind(wx.EVT_BUTTON, self.buscar_socio)
+        search_sizer.Add(self.search_ctrl, 0, wx.ALL | wx.EXPAND, 5)
+        search_sizer.Add(btn_buscar, 0, wx.ALL, 5)
+        search_panel.SetSizer(search_sizer)
+        main_sizer.Add(search_panel, 0, wx.ALL | wx.EXPAND, 10)
 
         # Lista de socios
-        self.list_ctrl = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SUNKEN, pos=(10, 10), size=(600, 250))
+        self.list_ctrl = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SUNKEN)
         self.list_ctrl.InsertColumn(0, 'ID', width=50)
         self.list_ctrl.InsertColumn(1, 'Nombre', width=100)
         self.list_ctrl.InsertColumn(2, 'Domicilio', width=150)
         self.list_ctrl.InsertColumn(3, 'Teléfono', width=200)
-        
         self.cargar_socios()
         self.list_ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.mostrar_detalle_socio)
+        main_sizer.Add(self.list_ctrl, 1, wx.ALL | wx.EXPAND, 10) # El 1 en proportion hace que se expanda verticalmente
 
-        # Botones
-        btn_nuevo = wx.Button(panel, label="Nuevo socio", pos=(50, 300))
+        # Panel para los botones
+        button_panel = wx.Panel(panel)
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        btn_nuevo = wx.Button(button_panel, label="Nuevo socio")
         btn_nuevo.Bind(wx.EVT_BUTTON, self.abrir_dialogo_nuevo)
-        btn_cerrar = wx.Button(panel, label="Cerrar", pos=(300, 300))
-        btn_cerrar.Bind(wx.EVT_BUTTON, self.cerrar_ventana)
-        btn_actualizar = wx.Button(panel, label="Actualizar", pos=(175, 300))
+        btn_actualizar = wx.Button(button_panel, label="Actualizar")
         btn_actualizar.Bind(wx.EVT_BUTTON, self.actualizar_lista)
+        btn_cerrar = wx.Button(button_panel, label="Cerrar")
+        btn_cerrar.Bind(wx.EVT_BUTTON, self.cerrar_ventana)
+        button_sizer.Add(btn_nuevo, 0, wx.ALL, 5)
+        button_sizer.Add(btn_actualizar, 0, wx.ALL, 5)
+        button_sizer.Add(btn_cerrar, 0, wx.ALL, 5)
+        button_panel.SetSizer(button_sizer)
+        main_sizer.Add(button_panel, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 10)
 
+        panel.SetSizer(main_sizer)
+        main_sizer.Fit(self)
         self.Show()
 
     def actualizar_lista(self, event):
@@ -39,16 +62,22 @@ class ListSocio(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         print("Lista actualizada en la interfaz")
         sys.stdout.flush()
         ReproductorSonido.reproducir("refresh.wav")
-    def cargar_socios(self):
+    def cargar_socios(self, nombre_busqueda = None):
         """Carga los socios desde SQLite en la interfaz."""
         self.list_ctrl.DeleteAllItems()
         socios = gestion_socio.obtener_todos()
         for id_socio, datos in socios.items():
-            index = self.list_ctrl.InsertItem(self.list_ctrl.GetItemCount(), str(id_socio))
-            self.list_ctrl.SetItem(index, 1, datos["nombre"])
-            self.list_ctrl.SetItem(index, 2, datos["domicilio"])
-            self.list_ctrl.SetItem(index, 3, str(datos["telefono"]))
+            nombre = datos.get("nombre", "")
+            domicilio = datos.get("domicilio", "")
+            telefono = str(datos.get("telefono", ""))
+            #r nombre si se proporciona un término de búsqueda
+            if nombre_busqueda is None or nombre_busqueda.lower() in nombre.lower():
+                index = self.list_ctrl.InsertItem(self.list_ctrl.GetItemCount(), str(id_socio))
+                self.list_ctrl.SetItem(index, 1, nombre)
+                self.list_ctrl.SetItem(index, 2, domicilio)
+                self.list_ctrl.SetItem(index, 3, telefono)
 
+                
     def mostrar_detalle_socio(self, event):
         """Muestra los detalles de un socio."""
         index = event.GetIndex()
@@ -60,6 +89,11 @@ class ListSocio(wx.Frame, listmix.ListCtrlAutoWidthMixin):
             dialogo.ShowModal()
             dialogo.Destroy()
             self.cargar_socios()
+
+
+    def buscar_socio(self, event):
+        nombre_busqueda = self.search_ctrl.GetValue()
+        self.cargar_socios(nombre_busqueda)
 
     def abrir_dialogo_nuevo(self, event):
         """Abre el diálogo para agregar un nuevo socio."""

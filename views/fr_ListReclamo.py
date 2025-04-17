@@ -14,13 +14,15 @@ from views.dl_AgregarReclamo import AgregarReclamoDialog
 from views.fr_ListSocio import ListSocio,AgregarSocioDialog
 from module.GestionReclamo import GestionReclamo
 from module.GestionSocio import GestionSocio
+from reports.ReportReclamo import ReporteReclamosFrame 
+
 gestion_reclamo = GestionReclamo()
 gestion_socio = GestionSocio()
 class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
-    def __init__(self, parent, nombre, fecha, hora_fin, id=wx.ID_ANY, *args, **kwds):
+    def __init__(self, parent,  fecha, hora_fin,operador_id, id=wx.ID_ANY, *args, **kwds):
         super().__init__(parent, id=id, title="Gestión de Reclamos", *args, **kwds)
 
-        self.nombre = nombre
+        self.operador_id= operador_id
         self.fecha = fecha
         self.hora_fin = hora_fin
 
@@ -125,8 +127,9 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         menu = wx.Menu()
         ver_socio_item = menu.Append(wx.ID_ANY, "Ver Socios")
         self.Bind(wx.EVT_MENU, self.on_ver_socios, ver_socio_item)
-        add_socio_item = menu.Append(wx.ID_ANY, "Agregar Socio...F2")
-        self.Bind(wx.EVT_MENU, self.on_add_socios, add_socio_item)
+        report_reclamo_item = menu.Append(wx.ID_ANY, "Reporte de Reclamos...")
+        self.Bind(wx.EVT_MENU, self.on_report_reclamo, report_reclamo_item)
+        from module.GestionReclamo import GestionReclamo
         exit_socio_item = menu.Append(wx.ID_ANY, "Salir")
         self.Bind(wx.EVT_MENU, self.cerrar_ventana, exit_socio_item)
         self.PopupMenu(menu, self.btn_menu.GetPosition())
@@ -145,10 +148,12 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         add_socios.Destroy()
         
 
-
-
-
-
+    def on_report_reclamo(self, event):
+        report_reclamo=ReporteReclamosFrame  (self)
+        ReproductorSonido.reproducir("screenCurtainOn.wav")
+        report_reclamo.Show()    
+        
+        
     def actualizar_titulo(self, event):
         from datetime import datetime
 
