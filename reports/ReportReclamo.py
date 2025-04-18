@@ -86,30 +86,3 @@ class ReporteReclamosFrame(wx.Frame):
         fecha_inicio = self.date_picker_inicio.GetValue().FormatISODate()
         fecha_fin = self.date_picker_fin.GetValue().FormatISODate()
         self.cargar_reclamos(fecha_inicio, fecha_fin)
-
-if __name__ == '__main__':
-    app = wx.App()
-    # Suponiendo que tienes una clase GestionReclamo
-    class GestionReclamo:
-        def obtener_reclamos_rango_pandas(self, fecha_inicio=None, fecha_fin=None):
-            # Simulación de obtención de reclamos con filtrado por fecha
-            data = [
-                {"id_reclamo": 1, "fecha": "2025-04-10", "categoria": "Técnica", "descripcion": "Problemas de conexión"},
-                {"id_reclamo": 2, "fecha": "2025-04-12", "categoria": "Comercial", "descripcion": "Error en factura"},
-                {"id_reclamo": 3, "fecha": "2025-04-12", "categoria": "Técnica", "descripcion": "Lentitud internet"},
-                {"id_reclamo": 4, "fecha": "2025-04-15", "categoria": "Comercial", "descripcion": "Consulta de plan"},
-            ]
-            df = pd.DataFrame(data)
-            if fecha_inicio:
-                df['fecha'] = pd.to_datetime(df['fecha']).dt.date
-                start_date = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
-                df = df[df['fecha'] >= start_date]
-            if fecha_fin:
-                df['fecha'] = pd.to_datetime(df['fecha']).dt.date
-                end_date = datetime.strptime(fecha_fin, "%Y-%m-%d").date()
-                df = df[df['fecha'] <= end_date]
-            return df
-
-    gestion_reclamo_instance = GestionReclamo()
-    ReporteReclamosFrame(None, gestion_reclamo=gestion_reclamo_instance)
-    app.MainLoop()

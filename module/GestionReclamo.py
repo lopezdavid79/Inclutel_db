@@ -1,3 +1,5 @@
+import traceback
+import pandas as pd
 import os
 import sys
 from datetime import date
@@ -117,4 +119,48 @@ class GestionReclamo:
             logging.error(f"Error al obtener nombre del socio: {e}")
             return None
         
-        
+    def obtener_reclamos_rango_pandas(self, fecha_inicio=None, fecha_fin=None):
+        """Obtiene los reclamos dentro de un rango de fechas y los devuelve como un DataFrame de Pandas."""
+        query = """
+            SELECT r.fecha, s.nombre AS socio_nombre, r.servicio, r.detalle, r.estado, o.nombre AS operador_nombre
+            FROM reclamos r
+            JOIN socios s ON r.socio = s.id
+            LEFT JOIN operador o ON r.operador_id = o.id
+        """
+        params = ()
+        where_clause = []
+
+        if fecha_inicio and fecha_fin:
+            where_clause.append("""
+                DATE(r.fecha) BETWEEN ? AND ?
+            """)
+            params = (fecha_inicio, fecha_fin)
+        elif fecha_inicio:
+            where_clause.append("""
+                DATE(r.fecha) >= ?
+            """)
+            params = (fecha_inicio,)
+        elif fecha_fin:
+            where_clause.append("""
+                DATE(r.fecha) <= ?
+            """)
+            params = (fecha_fin,)
+
+        if where_clause:
+            query += " WHERE " + " AND ".join(where_clause)
+
+        query += " ORDER BY r.fecha ASC"
+
+        try:
+            logging.debug(f"Ejecutando consulta SQL: {query}")
+            logging.debug(f"Parámetros de la consulta: {params}")
+            df = pd.read_sql_query(query, self.conexion, params=params)
+            logging.info(f"Se obtuvieron {len(df)} reclamos en el rango de fechas.")
+            return df
+        except sqlite3.Error as e:
+            logging.error(f"Error de SQLite al obtener reclamos en rango: {e}")
+            logging.error(f"Consulta SQL fallida: {query}")
+            logging.error(f"Parámetros de la consulta: {params}")
+            logging.error(f"Rango de fechas proporcionado: Inicio='{fecha_inicio}', Fin='{fecha_fin}'")
+            logging.error(traceback.format_exc())
+            return pd.DataFrame()

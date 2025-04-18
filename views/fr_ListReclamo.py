@@ -15,7 +15,7 @@ from views.fr_ListSocio import ListSocio,AgregarSocioDialog
 from module.GestionReclamo import GestionReclamo
 from module.GestionSocio import GestionSocio
 from reports.ReportReclamo import ReporteReclamosFrame 
-
+from views.dl_config import ConfigDialog
 gestion_reclamo = GestionReclamo()
 gestion_socio = GestionSocio()
 class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
@@ -130,6 +130,9 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         report_reclamo_item = menu.Append(wx.ID_ANY, "Reporte de Reclamos...")
         self.Bind(wx.EVT_MENU, self.on_report_reclamo, report_reclamo_item)
         from module.GestionReclamo import GestionReclamo
+        config_socio_item = menu.Append(wx.ID_ANY, "Configuración")
+        self.Bind(wx.EVT_MENU, self.OnConfiguracion, config_socio_item)
+
         exit_socio_item = menu.Append(wx.ID_ANY, "Salir")
         self.Bind(wx.EVT_MENU, self.cerrar_ventana, exit_socio_item)
         self.PopupMenu(menu, self.btn_menu.GetPosition())
@@ -154,6 +157,11 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         report_reclamo.Show()    
         
         
+    def OnConfiguracion(self, event):
+        dlg = ConfigDialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def actualizar_titulo(self, event):
         from datetime import datetime
 

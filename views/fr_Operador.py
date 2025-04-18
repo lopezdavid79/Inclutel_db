@@ -9,28 +9,34 @@ gestion_OperadorTurno = GestionOperadorTurno()
 class TurnoFrame(wx.Frame):
     def __init__(self, parent, id=None, title="Gestión de Reclamos", *args, **kwds):
         super().__init__(parent, id=wx.ID_ANY, title=title, *args, **kwds)
+        hora_predet_inicio, hora_predet_fin = self.cargar_horarios_predeterminados()
         panel = wx.Panel(self)
         vbox = wx.BoxSizer(wx.VERTICAL)
         # Combobox para seleccionar el operador
         vbox.Add(wx.StaticText(panel, label="Seleccionar Operador:"), flag=wx.LEFT | wx.TOP, border=10)
         self.combo_operador = wx.ComboBox(panel, choices=self.obtener_nombres_operadores(), style=wx.CB_READONLY)
         vbox.Add(self.combo_operador, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
-        # Establecer un valor por defecto (opcional)
-        if self.combo_operador.GetCount() > 0:
-            self.combo_operador.SetSelection(3)
-
-    
+        #Establecer operador predeterminado desde la configuración
+        config = wx.Config("MiApp")
+        operador_predet = config.Read("operador_predeterminado", "")
+        if operador_predet and operador_predet in self.combo_operador .GetItems():
+            self.combo_operador.SetStringSelection(operador_predet)
+        elif self.combo_operador.GetCount() > 0:
+            self.combo_operador.SetSelection(0)
+        
 #fecha
         vbox.Add(wx.StaticText(panel, label="Fecha :"), flag=wx.LEFT | wx.TOP, border=10)
         self.txt_fecha = wx.TextCtrl(panel, value=datetime.now().strftime("%Y-%m-%d"))
         vbox.Add(self.txt_fecha, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         vbox.Add(wx.StaticText(panel, label="Hora de comienzo (HH:MM):"), flag=wx.LEFT | wx.TOP, border=10)
-        self.txt_hora_comienzo = wx.TextCtrl(panel, value=datetime.now().strftime("%H:%M"))
+
+        self.txt_hora_comienzo = wx.TextCtrl(panel, value=hora_predet_inicio)
+
         vbox.Add(self.txt_hora_comienzo, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         vbox.Add(wx.StaticText(panel, label="Hora de fin (HH:MM):"), flag=wx.LEFT | wx.TOP, border=10)
-        self.txt_hora_fin = wx.TextCtrl(panel, value="18:00")
+        self.txt_hora_fin = wx.TextCtrl(panel, value=hora_predet_fin)
         vbox.Add(self.txt_hora_fin, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
         hbox_botones = wx.BoxSizer(wx.HORIZONTAL)
@@ -121,3 +127,10 @@ class TurnoFrame(wx.Frame):
     def obtener_nombres_operadores(self):
         """Obtiene los nombres de los operadores usando la clase de gestión."""
         return gestion_OperadorTurno.obtener_nombres_operadores()
+
+    def cargar_horarios_predeterminados(self):
+        config = wx.Config("MiApp")
+        hora_inicio = config.Read("hora_inicio", "08:00")
+        hora_fin = config.Read("hora_fin", "16:00")
+        return hora_inicio, hora_fin
+    
