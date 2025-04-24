@@ -1,6 +1,6 @@
 import webbrowser
 import urllib.parse
-
+from module.ReproductorSonido import ReproductorSonido
 import wx
 import re
 from module.GestionSocio import GestionSocio
@@ -69,13 +69,14 @@ class AgregarReclamoDialog(wx.Dialog):
         self.datos_socios_txt = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
         grid.Add(self.datos_socios_txt, pos=(4, 1), flag=wx.EXPAND | wx.ALL, border=5)
 
-        # Estado (combo box) - MOVED TO BEFORE BUTTONS
+        #estado
         grid.Add(wx.StaticText(panel, label="Estado:"), pos=(5, 0), flag=wx.ALL, border=5)
         self.combo_estado = wx.ComboBox(panel, choices=["Pendiente", "Realizado", "En Proceso", "Cancelado", "Finalizado"], style=wx.CB_READONLY)
+        self.combo_estado.SetSelection(0)
         grid.Add(self.combo_estado, pos=(5, 1), flag=wx.EXPAND | wx.ALL, border=5)
 
         # Botones
-        btn_ok = wx.Button(panel, label="Guardar")
+        btn_ok = wx.Button(panel, label="%&Guardar")
         btn_cancel = wx.Button(panel, wx.ID_CANCEL, "Cancelar")
         btn_ok.Bind(wx.EVT_BUTTON, self.guardar_reclamo)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -145,7 +146,7 @@ class AgregarReclamoDialog(wx.Dialog):
         if keycode == wx.WXK_RETURN or keycode == 307:
             print("Enter presionado en lista socios")
             self.seleccionar_socio()
-            self.txt_socio.SetFocus()
+            self.datos_socios_txt.SetFocus()
         else:
             event.Skip()
 
@@ -170,9 +171,9 @@ class AgregarReclamoDialog(wx.Dialog):
         try:
             gestion_reclamo.registrar_reclamo(None, servicio, detalle, socio_id, estado)
             print(f"Reclamo guardado: servicio={servicio}, socio={socio_id}, Detalle={detalle}, Estado={estado}")
-            self.mostrar_mensaje("Reclamo guardado con éxito.", wx.ICON_INFORMATION)
+            #self.mostrar_mensaje("Reclamo guardado con éxito.", wx.ICON_INFORMATION)
             datos=gestion_socio.buscar_socio(socio_id) 
-            
+            ReproductorSonido.reproducir("ok.wav")    
             # self.actualizar_lista_socios()  # Cambio: Comentado para evitar errores
 
             # Enviar reclamo por WhatsApp

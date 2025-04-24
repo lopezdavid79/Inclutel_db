@@ -68,7 +68,7 @@ def mostrar_estructura_db(nombre_db):
             conexion.close()
 
 if __name__ == "__main__":
-    nombre_base_datos = "inclutel.db"
+    nombre_base_datos = "data_winclutel.db"
     mostrar_estructura_db(nombre_base_datos)
 
     

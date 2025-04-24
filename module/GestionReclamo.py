@@ -118,49 +118,58 @@ class GestionReclamo:
         except sqlite3.Error as e:
             logging.error(f"Error al obtener nombre del socio: {e}")
             return None
-        
-    def obtener_reclamos_rango_pandas(self, fecha_inicio=None, fecha_fin=None):
-        """Obtiene los reclamos dentro de un rango de fechas y los devuelve como un DataFrame de Pandas."""
+
+    def obtener_reclamos_rango_pandas(self, fecha_inicio=None, fecha_fin=None, servicio=None):
+        """Obtiene los reclamos dentro de un rango de fechas y por servicio,
+        devolviéndolos como un DataFrame de Pandas.
+        """
         query = """
             SELECT r.fecha, s.nombre AS socio_nombre, r.servicio, r.detalle, r.estado, o.nombre AS operador_nombre
             FROM reclamos r
             JOIN socios s ON r.socio = s.id
             LEFT JOIN operador o ON r.operador_id = o.id
         """
-        params = ()
+        params = []
         where_clause = []
 
         if fecha_inicio and fecha_fin:
             where_clause.append("""
                 DATE(r.fecha) BETWEEN ? AND ?
             """)
-            params = (fecha_inicio, fecha_fin)
+            params.extend([fecha_inicio, fecha_fin])
         elif fecha_inicio:
             where_clause.append("""
                 DATE(r.fecha) >= ?
             """)
-            params = (fecha_inicio,)
+            params.append(fecha_inicio)
         elif fecha_fin:
             where_clause.append("""
                 DATE(r.fecha) <= ?
             """)
-            params = (fecha_fin,)
+            params.append(fecha_fin)
+
+        if servicio:
+            where_clause.append("""
+                r.servicio = ?
+            """)
+            params.append(servicio)
 
         if where_clause:
             query += " WHERE " + " AND ".join(where_clause)
 
-        query += " ORDER BY r.fecha ASC"
+        query += " ORDER BY r.fecha ASC"  # Corregí el "ASwC" a "ASC"
 
         try:
             logging.debug(f"Ejecutando consulta SQL: {query}")
             logging.debug(f"Parámetros de la consulta: {params}")
             df = pd.read_sql_query(query, self.conexion, params=params)
-            logging.info(f"Se obtuvieron {len(df)} reclamos en el rango de fechas.")
+            logging.info(f"Se obtuvieron {len(df)} reclamos con los filtros aplicados.")
             return df
         except sqlite3.Error as e:
-            logging.error(f"Error de SQLite al obtener reclamos en rango: {e}")
+            logging.error(f"Error de SQLite al obtener reclamos con filtros: {e}")
             logging.error(f"Consulta SQL fallida: {query}")
             logging.error(f"Parámetros de la consulta: {params}")
             logging.error(f"Rango de fechas proporcionado: Inicio='{fecha_inicio}', Fin='{fecha_fin}'")
+            logging.error(f"Servicio proporcionado: '{servicio}'")
             logging.error(traceback.format_exc())
             return pd.DataFrame()

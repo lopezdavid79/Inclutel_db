@@ -3,11 +3,11 @@ import pandas as pd
 import wx.adv
 from datetime import datetime
 from module.GestionReclamo import GestionReclamo
-gestion_reclamo=GestionReclamo()
+gestion_reclamo = GestionReclamo()
+
 class ReporteReclamosFrame(wx.Frame):
     def __init__(self, parent, title="Reporte de Reclamos"):
         super().__init__(parent, title=title, size=(800, 600))
-        #self.gestion_reclamo = gestion_reclamo  # Recibe la instancia de gestión de reclamos
         self.panel = wx.Panel(self)
         vbox = wx.BoxSizer(wx.VERTICAL)
 
@@ -28,6 +28,15 @@ class ReporteReclamosFrame(wx.Frame):
 
         vbox.Add(hbox_fechas, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
 
+        # Control para seleccionar servicio
+        hbox_servicio = wx.BoxSizer(wx.HORIZONTAL)
+        hbox_servicio.Add(wx.StaticText(self.panel, label="Filtrar por Servicio:"), flag=wx.RIGHT | wx.ALIGN_CENTER_VERTICAL, border=10)
+        servicios = ["Todos"] + self.obtener_servicios_unicos()  # Obtener servicios únicos de la DB
+        self.combo_servicio = wx.ComboBox(self.panel, choices=servicios, style=wx.CB_READONLY)
+        self.combo_servicio.SetStringSelection("Todos")  # Opción por defecto
+        hbox_servicio.Add(self.combo_servicio, proportion=1, flag=wx.EXPAND)
+        vbox.Add(hbox_servicio, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
+
         # Botón de filtrar
         self.btn_filtrar = wx.Button(self.panel, label="Filtrar Reclamos")
         self.btn_filtrar.Bind(wx.EVT_BUTTON, self.on_filtrar_reclamos)
@@ -43,12 +52,25 @@ class ReporteReclamosFrame(wx.Frame):
         self.panel.SetSizer(vbox)
         self.Centre()
         self.Show()
-        self.cargar_reclamos() # Cargar todos los reclamos al inicio
+        self.cargar_reclamos()  # Cargar todos los reclamos al inicio
 
-    def cargar_reclamos(self, fecha_inicio=None, fecha_fin=None):
+    def obtener_servicios_unicos(self):
+        """Obtiene la lista de servicios únicos desde la base de datos."""
         try:
             if gestion_reclamo:
-                df = gestion_reclamo.obtener_reclamos_rango_pandas(fecha_inicio, fecha_fin)
+                df_servicios = pd.read_sql_query("SELECT DISTINCT servicio FROM reclamos ORDER BY servicio ASC", gestion_reclamo.conexion)
+                return df_servicios['servicio'].tolist()
+            else:
+                wx.MessageBox("Error: No se recibió la instancia de gestión de reclamos.", "Error", wx.OK | wx.ICON_ERROR)
+                return []
+        except Exception as e:
+            wx.MessageBox(f"Error al obtener servicios: {e}", "Error", wx.OK | wx.ICON_ERROR)
+            return []
+
+    def cargar_reclamos(self, fecha_inicio=None, fecha_fin=None, servicio=None):
+        try:
+            if gestion_reclamo:
+                df = gestion_reclamo.obtener_reclamos_rango_pandas(fecha_inicio, fecha_fin, servicio)
                 self.mostrar_dataframe_en_lista(df)
                 if not df.empty:
                     total_reclamos = len(df)
@@ -65,7 +87,7 @@ class ReporteReclamosFrame(wx.Frame):
 
         if df.empty:
             self.list_ctrl.InsertColumn(0, "Información")
-            self.list_ctrl.InsertItem(0, "No se encontraron reclamos en el rango seleccionado.")
+            self.list_ctrl.InsertItem(0, "No se encontraron reclamos con los filtros aplicados.")
             return
 
         # Crear columnas
@@ -85,4 +107,6 @@ class ReporteReclamosFrame(wx.Frame):
     def on_filtrar_reclamos(self, event):
         fecha_inicio = self.date_picker_inicio.GetValue().FormatISODate()
         fecha_fin = self.date_picker_fin.GetValue().FormatISODate()
-        self.cargar_reclamos(fecha_inicio, fecha_fin)
+        servicio_seleccionado = self.combo_servicio.GetStringSelection()
+        servicio_filtro = servicio_seleccionado if servicio_seleccionado != "Todos" else None
+        self.cargar_reclamos(fecha_inicio, fecha_fin, servicio_filtro)

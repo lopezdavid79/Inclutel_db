@@ -1,19 +1,12 @@
-2025-04-14 14:18:21,558 - INFO - Tabla operadorTurnoverificada/creada.
-2025-04-14 14:18:21,558 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:18:21,558 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:18:21,558 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:18:21,562 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:18:23,698 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:18:23,698 - INFO - Tabla operadorTurnoverificada/creada.
-2025-04-14 14:18:23,698 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:19:09,694 - INFO - Turno para operador con ID '1' registrado correctamente.
-2025-04-14 14:20:49,813 - ERROR - Error al obtener el operador activo: no such column: hora_comienzo
-2025-04-14 14:23:12,983 - INFO - Tabla operadorTurnoverificada/creada.
-2025-04-14 14:23:12,983 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:23:12,983 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:23:12,988 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:23:12,988 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:23:13,228 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:23:13,228 - INFO - Tabla operadorTurnoverificada/creada.
-2025-04-14 14:23:13,228 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
-2025-04-14 14:23:22,564 - INFO - Turno para operador con ID '1' registrado correctamente.
+2025-04-18 21:09:21,597 - INFO - Tabla operadorTurnoverificada/creada.
+2025-04-18 21:09:21,597 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
+2025-04-18 21:09:21,597 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
+2025-04-18 21:09:21,597 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
+2025-04-18 21:09:21,597 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
+2025-04-18 21:09:21,597 - INFO - Tabla operadorTurnoverificada/creada.
+2025-04-18 21:09:21,597 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
+2025-04-18 21:09:21,602 - INFO - Tabla operadorTurnoverificada/creada.
+2025-04-18 21:09:21,602 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
+2025-04-18 21:09:21,602 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
+2025-04-18 21:09:21,602 - INFO - Tabla operadorTurnoverificada/creada.
+2025-04-18 21:09:21,602 - INFO - Conexión a la base de datos establecida en: C:\Users\DAVID\repo\Inclutel_db-1.0.0\dist\Inclutel\inclutel.db
