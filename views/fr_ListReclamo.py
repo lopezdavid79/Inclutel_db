@@ -46,7 +46,7 @@ class ListReclamo(wx.Frame, listmix.ListCtrlAutoWidthMixin):
         self.list_ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.mostrar_detalle_reclamo)
 
         # Botones
-        btn_nuevo = wx.Button(panel, label="Nuevo Reclamo", pos=(50, 300))
+        btn_nuevo = wx.Button(panel, label="&Nuevo Reclamo", pos=(50, 300))
         btn_nuevo.Bind(wx.EVT_BUTTON, self.abrir_dialogo_nuevo)
 
         btn_cerrar = wx.Button(panel, label="Cerrar", pos=(300, 300))

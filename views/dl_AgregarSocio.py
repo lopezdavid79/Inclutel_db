@@ -1,5 +1,6 @@
 import wx
 import re
+from module.ReproductorSonido import ReproductorSonido
 from module.GestionSocio import GestionSocio
 gestion_socio= GestionSocio()
 class AgregarSocioDialog(wx.Dialog):
@@ -69,14 +70,11 @@ class AgregarSocioDialog(wx.Dialog):
             
 
             gestion_socio.registrar_socio( nombre, domicilio, telefono, n_socio)
-            print(f"Socio guardado: Nombre={nombre}, Domicilio={domicilio}, Telefono={telefono}, Numero de socio={n_socio}")
-            self.mostrar_mensaje("Socio guardado con éxito.", wx.ICON_INFORMATION)
-# Llamar a la función de actualización en la ventana principal si está disponible
-            self.txt_nombre.SetValue("")
-            self.txt_domicilio.SetValue("")
-            self.txt_telefono.SetValue("")
-            self.txt_n_socio.SetValue("")                       
-            self.Close()
+#            print(f"Socio guardado: Nombre={nombre}, Domicilio={domicilio}, Telefono={telefono}, Numero de socio={n_socio}")
+            #self.mostrar_mensaje("Socio guardado con éxito.", wx.ICON_INFORMATION)
+            ReproductorSonido.reproducir("ok.wav")
+
+            self.EndModal(wx.ID_OK)
         except Exception as e:
             self.mostrar_mensaje(f"Error al guardar el socio: {e}", wx.ICON_ERROR)
 

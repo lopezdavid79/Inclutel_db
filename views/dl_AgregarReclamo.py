@@ -1,6 +1,7 @@
 import webbrowser
 import urllib.parse
 from module.ReproductorSonido import ReproductorSonido
+from views.dl_AgregarSocio  import AgregarSocioDialog
 import wx
 import re
 from module.GestionSocio import GestionSocio
@@ -37,7 +38,7 @@ class AgregarReclamoDialog(wx.Dialog):
         self.txt_socio = wx.TextCtrl(panel)
         grid.Add(self.txt_socio, pos=(2, 1), flag=wx.EXPAND | wx.ALL, border=5)
 
-        # Botón Filtrar
+# Botón Filtrar
         self.btn_filtrar_socio = wx.Button(panel, label="Filtrar")
         grid.Add(self.btn_filtrar_socio, pos=(2, 2), flag=wx.ALL, border=5)
 
@@ -52,8 +53,14 @@ class AgregarReclamoDialog(wx.Dialog):
 
         # Diccionario de socios
         self.socios_dict = self.cargar_socios()
+# Botón Agregar Nuevo Socio
+        self.btn_agregar_socio = wx.Button(panel, label="Agregar &Nuevo Socio")
+        grid.Add(self.btn_agregar_socio, pos=(5, 2), flag=wx.ALIGN_RIGHT | wx.ALL, border=5)
 
+        
+        
     # Eventos
+        self.btn_agregar_socio.Bind(wx.EVT_BUTTON, self.on_add_socios)
         self.btn_filtrar_socio.Bind(wx.EVT_BUTTON, self.filtrar_socios)
         self.btn_seleccionar_socio.Bind(wx.EVT_BUTTON, self.seleccionar_socio)
         self.txt_socio.Bind(wx.EVT_KEY_DOWN, self.on_key_socio)
@@ -239,3 +246,19 @@ class AgregarReclamoDialog(wx.Dialog):
         url = f"https://wa.me/{numero_telefono}?text={mensaje_codificado}"
         webbrowser.open_new_tab(url)
 
+    def on_add_socios(self, event):
+        """Maneja el evento del botón Agregar Nuevo Socio."""
+        add_socios = AgregarSocioDialog(self) # Crea una instancia de AgregarSocioDialog
+        ReproductorSonido.reproducir("screenCurtainOn.wav")
+        if add_socios.ShowModal() == wx.ID_OK:
+            print(f"¿El diálogo se cerró con OK? Sí")
+            nuevo_nombre = add_socios.txt_nombre.GetValue().strip()
+            print(f"agregar socio{nuevo_nombre}")
+            self.txt_socio.SetValue(nuevo_nombre)
+            self.cargar_socios() # Recargar la lista de socios para que aparezca el nuevo
+            self.list_socios.Show() # Mostrar la lista si estaba oculta
+            self.list_socios.SetStringSelection(nuevo_nombre) # Seleccionar el nuevo socio en la lista
+            self.anunciar_seleccion_socio() # Anunciar la selección para lectores de pantalla
+            self.mostrar_datos_socio(nuevo_nombre) # Mostrar los datos del nuevo socio
+            self.txt_socio.SetFocus() # Devolver el foco al campo de búsqueda
+        add_socios.Destroy()
